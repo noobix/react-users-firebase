@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React from "react";
+import Users from './components/Users'
+import Form from './components/UsersForm'
+import firebase from './firebase/config'
+import {setUsers} from './actions/Action'
+import {connect} from 'react-redux'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  componentDidMount = () => {
+    firebase.firestore().collection("users").onSnapshot((document) => {
+      let users = [];
+      document.forEach((doc) => {
+        users.push(doc.data())
+      });
+      this.props.setUsers(users)
+    })
+  }
+  render(){
+    return(<div>
+    <Users />
+    <Form /></div>)}
+
+}
+const mapDispatchToProps = {
+  setUsers: setUsers
 }
 
-export default App;
+export default connect(null, mapDispatchToProps) (App);
